@@ -1,0 +1,16 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Playwright Test",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/@playwright/test/lib/cli.js",
+      "args": ["tests/locatingMultipleElements.spec.js"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PWDEBUG": "1"
+      }
+    }
+  ]
+}
