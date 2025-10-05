@@ -1,4 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
+import dotenv from 'dotenv';
+import path from 'path';
 
 /**
  * Read environment variables from file.
@@ -11,77 +13,42 @@ import { defineConfig, devices } from '@playwright/test';
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
+// Load env from .env or ENVs per NODE_ENV
+dotenv.config({ path: path.resolve(__dirname, '.env') });
+
+const HEADLESS = process.env.HEADLESS === 'true';
+const BASE_URL = process.env.BASE_URL || undefined;
+const TRACE = process.env.TRACE || 'on-first-retry';
+const VIDEO = process.env.VIDEO || 'retain-on-failure';
+const SCREENSHOT = process.env.SCREENSHOT || 'only-on-failure';
+
 export default defineConfig({
-  // testDir: './tests',
-  // /* Run tests in files in parallel */
-  // fullyParallel: true,
-  // /* Fail the build on CI if you accidentally left test.only in the source code. */
-  // forbidOnly: !!process.env.CI,
-  // /* Retry on CI only */
-  // retries: process.env.CI ? 2 : 0,
-  // /* Opt out of parallel tests on CI. */
-  // workers: process.env.CI ? 1 : undefined,
-  // /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  // reporter: 'html',
-  // /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
-  // use: {
-  //   /* Base URL to use in actions like `await page.goto('/')`. */
-  //   // baseURL: 'http://localhost:3000',
-
-    
-  // },
-   testDir: './tests',
-  //reporter: [['html', { open: 'never' }]],
-
-  outputDir: 'traces', // ✅ saves all traces/videos/screenshots here
-
+  testDir: './tests',
+  reporter: [
+    ['list'],
+    ['html', { open: 'never' }],
+    ['allure-playwright', { outputFolder: 'allure-results' }]
+  ],
+  outputDir: 'traces',
   use: {
-    trace: 'on',         // ✅ Always collect traces
-    headless: false,     // Optional: run headed
-    video: 'retain-on-failure', // Optional: collect video if needed
-    screenshot: 'only-on-failure', // Optional: collect screenshots
+    baseURL: BASE_URL,
+    trace: TRACE as 'on' | 'off' | 'retain-on-failure' | 'on-first-retry',
+    headless: HEADLESS,
+    video: VIDEO as 'on' | 'off' | 'retain-on-failure',
+    screenshot: SCREENSHOT as 'on' | 'off' | 'only-on-failure',
   },
-  
-
-  /* Configure projects for major browsers */
   projects: [
     {
       name: 'chromium',
-      use: {
-        browserName: 'chromium',
-         //Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer 
-  
-        //trace:'on',
-        headless: false,
-        channel: 'chrome', // optional: to force Google Chrome
-      },
+      use: { ...devices['Desktop Chrome'] }
     },
-
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    // },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] }
+    },
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] }
+    }
   ],
-
-  /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run start',
-  //   url: 'http://localhost:3000',
-  //   reuseExistingServer: !process.env.CI,
-  // },
 });
