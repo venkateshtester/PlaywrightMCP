@@ -10,20 +10,22 @@
     "test:headed": "HEADLESS=false npm run test",
     "test:ci": "HEADLESS=true TRACE=retain-on-failure npm run test",
     "allure:generate": "allure generate allure-results --clean -o allure-report",
-    "allure:open": "npm run allure:generate && allure open allure-report"
+    "allure:open": "npm run allure:generate && allure open allure-report",
+  "mcp": "npx @playwright/mcp"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
-    "@playwright/test": "^1.55.1",
+    "@playwright/test": "^1.56.0",
     "@types/node": "^24.0.3",
     "allure-playwright": "^3.4.1",
     "dotenv": "^16.4.5",
     "rimraf": "^6.0.1"
   },
   "dependencies": {
+    "@playwright/mcp": "^0.0.41",
     "ajv": "^8.17.1"
   }
 }
